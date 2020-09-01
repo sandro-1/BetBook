@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:local="clr-namespace:BetBook.ViewModels"
+             mc:Ignorable="d"
+             x:Class="BetBook.Views.HomePage"
+             xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;assembly=Xamarin.Forms.Core">
+
+    
+    <MasterDetailPage.Master>
+        <ContentPage Title="Master">
+            <ContentPage.BindingContext>
+                <local:HomeViewModel/>
+            </ContentPage.BindingContext>
+            <ContentPage.Content>
+                <StackLayout>
+                    <Button Text="Home" Margin="5, 5, 0, 2"/>
+                    <Button Text="Find Users" Margin="5, 0, 0, 2"/>
+                    <Button Text="Settings" Margin="5, 0, 0, 2"/>
+                    <Button Text="Logout" Command="{Binding LogoutCommand}" Margin="5, 0, 0, 2"/>
+                </StackLayout>
+            </ContentPage.Content>            
+        </ContentPage>
+    </MasterDetailPage.Master>
+
+</MasterDetailPage>

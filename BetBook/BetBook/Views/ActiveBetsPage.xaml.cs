@@ -1,0 +1,67 @@
+﻿using BetBook.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+namespace BetBook.Views
+{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class ActiveBetsPage : ContentPage
+    {
+        ActiveBetsViewModel activeBetsVM;
+        public ActiveBetsPage()
+        {
+            InitializeComponent();
+            activeBetsVM = new ActiveBetsViewModel();
+            BindingContext = activeBetsVM;
+
+            MessagingCenter.Subscribe<object, bool>(this, "BetClosed", (sender, arg) =>
+            {
+                activeBetsVM.RefreshCommand.Execute(null);
+            });
+        }
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            activeBetsVM.RefreshCommand.Execute(null);
+        }
+
+        public async void SettleBet(Object Sender, EventArgs args)
+        {
+            Button button = (Button)Sender;
+            string betId = button.CommandParameter.ToString();
+            await activeBetsVM.ExecuteSettleBetCommand(betId);
+            
+            TabsHomeViewModel tabsVM = new TabsHomeViewModel();
+            tabsVM.RefreshCommand.Execute(null);            
+            this.Parent.BindingContext = tabsVM;
+        }
+
+        public async void RequestSettlement(Object Sender, EventArgs args)
+        {
+            Button button = (Button)Sender;
+            string betId = button.CommandParameter.ToString();
+            await activeBetsVM.ExecuteRequestSettlementCommand(betId);
+
+            TabsHomeViewModel tabsVM = new TabsHomeViewModel();
+            tabsVM.RefreshCommand.Execute(null);
+            this.Parent.BindingContext = tabsVM;
+        }
+
+        public async void RequestResponse(Object Sender, EventArgs args)
+        {
+            Button button = (Button)Sender;
+            string betId = button.CommandParameter.ToString();
+            await activeBetsVM.ExecuteRequestResponseCommand(betId);
+
+            TabsHomeViewModel tabsVM = new TabsHomeViewModel();
+            tabsVM.RefreshCommand.Execute(null);
+            this.Parent.BindingContext = tabsVM;
+        }
+    }
+}

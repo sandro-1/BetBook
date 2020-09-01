@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:BetBook.ViewModels"
+             mc:Ignorable="d"
+             x:Class="BetBook.Views.MakeBetsPage"
+             Title="Make A Bet">
+
+    <ContentPage.Content>
+        <StackLayout>
+            <Editor Placeholder="Enter Opponent's Username" Text="{Binding BetTermSheet.OpponentsUsername}" AutoSize="TextChanges"/>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Editor Text="{Binding IsCashToggleText}" IsEnabled="False" Margin="4" FontSize="Body" Grid.Column="0"/>
+                <Switch IsToggled="{Binding IsCashToggle}" Toggled="OnToggled" Grid.Column="1" Margin="0, 0, 20, 0"/>
+            </Grid>
+            
+            <Editor Placeholder="Enter Cash Bet Amount" Text="{Binding BetTermSheet.CashBetAmount}" IsVisible="{Binding IsCashToggle}" AutoSize="TextChanges"/>
+            <Editor Placeholder="Enter Non Cash Bet" Text="{Binding BetTermSheet.NonCashBet}" IsVisible="{Binding OppositeCashToggle}" AutoSize="TextChanges"/>
+            <Editor Placeholder="Enter The Terms Of The Bet" Text="{Binding BetTermSheet.BetTerms}" AutoSize="TextChanges"/>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Editor Text="Set Expiration For Offer" IsEnabled="False" Margin="4" FontSize="Body" Grid.Column="0"/>
+                <Switch IsToggled="{Binding IsExpirySet}" Grid.Column="1" Margin="0, 0, 20, 0"/>
+            </Grid>
+            <DatePicker Date="{Binding ExpiryDate}" IsVisible="{Binding IsExpirySet}"/>
+            <TimePicker Time="{Binding ExpiryTime}" IsVisible="{Binding IsExpirySet}"/>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Editor Text="Set Bet Resolution Date" IsEnabled="False" Margin="4" FontSize="Body" Grid.Column="0"/>
+                <Switch IsToggled="{Binding IsExpirySetBet}" Grid.Column="1" Margin="0, 0, 20, 0"/>
+            </Grid>
+            <DatePicker Date="{Binding ExpiryDateBet}" IsVisible="{Binding IsExpirySetBet}"/>
+            <TimePicker Time="{Binding ExpiryTimeBet}" IsVisible="{Binding IsExpirySetBet}"/>
+
+            <Button Text="Send offer" Clicked="SendOffer"/>
+            
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,34 @@
+{
+  "id": "",
+  "username": "",
+  "firstName": "",
+  "lastName": "",
+  "userResults": {
+    "betsWon": 0,
+    "betsLost": 0,
+    "cashWon": 0,
+    "cashLost": 0
+  },
+  "betList": [
+    {
+      "betId": "",
+      "myUsername": "",
+      "opponentsUsername": "",
+      "dateTimeOffered": "",
+      "dateTimeAccepted": "",
+      "dateTimeBetSettled": "",
+      "dateTimePaid": "",
+      "cashOrNot": true,
+      "cashBetAmount": 0,
+      "nonCashBet": "",
+      "betTerms": "",
+      "setOfferExpiration": true,
+      "dateTimeOfferExpiration": "",
+      "setBetCloseDate": false,
+      "dateTimeBetClose": "",
+      "betPhase": ""
+    }
+  ]
+}
+
+//Phase options = OfferSent, OfferReceived, ActiveBet, SettledPaid, SettledUnpaid

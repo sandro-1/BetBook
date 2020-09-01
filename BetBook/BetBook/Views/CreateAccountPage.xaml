@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="BetBook.Views.CreateAccountPage">
+    <ContentPage.Content>
+        <StackLayout Padding="0, 20, 0, 0">
+            <Entry Text="{Binding Credentials.FirstName}" Placeholder="First Name"/>
+            <Entry Text="{Binding Credentials.LastName}" Placeholder="Last Name"/>
+            <Entry Text="{Binding Credentials.Username}" Placeholder="Enter Username"/>
+            <Entry Text="{Binding Credentials.Password}" Placeholder="Password" IsPassword="True"/>
+            <Button Text="Create Account" Command="{Binding CreateAccountCommand}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
