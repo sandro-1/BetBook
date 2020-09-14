@@ -1,4 +1,5 @@
-﻿using BetBook.ViewModels;
+﻿using BetBook.Models;
+using BetBook.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,18 +31,6 @@ namespace BetBook.Views
             base.OnAppearing();
             activeBetsVM.RefreshCommand.Execute(null);
         }
-
-        public async void SettleBet(Object Sender, EventArgs args)
-        {
-            Button button = (Button)Sender;
-            string betId = button.CommandParameter.ToString();
-            await activeBetsVM.ExecuteSettleBetCommand(betId);
-            
-            TabsHomeViewModel tabsVM = new TabsHomeViewModel();
-            tabsVM.RefreshCommand.Execute(null);            
-            this.Parent.BindingContext = tabsVM;
-        }
-
         public async void RequestSettlement(Object Sender, EventArgs args)
         {
             Button button = (Button)Sender;
@@ -53,11 +42,22 @@ namespace BetBook.Views
             this.Parent.BindingContext = tabsVM;
         }
 
-        public async void RequestResponse(Object Sender, EventArgs args)
+        public async void RespondToRequest(Object Sender, EventArgs args)
         {
             Button button = (Button)Sender;
             string betId = button.CommandParameter.ToString();
-            await activeBetsVM.ExecuteRequestResponseCommand(betId);
+            await activeBetsVM.ExecuteResponseToRequestCommand(betId);
+            
+            TabsHomeViewModel tabsVM = new TabsHomeViewModel();
+            tabsVM.RefreshCommand.Execute(null);            
+            this.Parent.BindingContext = tabsVM;
+        }
+
+        public async void RespondToResponse(Object Sender, EventArgs args)
+        {
+            Button button = (Button)Sender;
+            string betId = button.CommandParameter.ToString();
+            await activeBetsVM.ExecuteResponseToResponseCommand(betId);
 
             TabsHomeViewModel tabsVM = new TabsHomeViewModel();
             tabsVM.RefreshCommand.Execute(null);

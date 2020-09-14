@@ -5,10 +5,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;assembly=Xamarin.Forms.Core"             
              mc:Ignorable="d"
-             BarBackgroundColor="WhiteSmoke"
-             android:NavigationPage.BarHeight="345"
+             BarBackgroundColor="White"                          
              BarTextColor="Black"
              x:Class="BetBook.Views.NavBasePage">
-
     
+
 </NavigationPage>

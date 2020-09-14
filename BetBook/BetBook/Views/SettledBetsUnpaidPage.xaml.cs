@@ -27,22 +27,34 @@ namespace BetBook.Views
             settledBetsUnpaidVM.RefreshCommand.Execute(null);
         }
 
-        public async void BetPaid(Object Sender, EventArgs args)
+        public async void RequestSettlement(Object Sender, EventArgs args)
         {
             Button button = (Button)Sender;
             string betId = button.CommandParameter.ToString();
-            await settledBetsUnpaidVM.ExecuteBetPaidCommand(betId);
+            await settledBetsUnpaidVM.ExecuteRequestSettlementCommand(betId);
 
             TabsHomeViewModel tabsVM = new TabsHomeViewModel();
             tabsVM.RefreshCommand.Execute(null);
             this.Parent.BindingContext = tabsVM;
         }
 
-        public async void RequestSettlement(Object Sender, EventArgs args)
+        public async void RespondToRequest(Object Sender, EventArgs args)
         {
             Button button = (Button)Sender;
             string betId = button.CommandParameter.ToString();
-            await settledBetsUnpaidVM.ExecuteRequestSettlementCommand(betId);
+            await settledBetsUnpaidVM.ExecuteResponseToRequestCommand(betId);
+
+            TabsHomeViewModel tabsVM = new TabsHomeViewModel();
+            tabsVM.RefreshCommand.Execute(null);
+            this.Parent.BindingContext = tabsVM;
+        }
+
+
+        public async void RespondToResponse(Object Sender, EventArgs args)
+        {
+            Button button = (Button)Sender;
+            string betId = button.CommandParameter.ToString();
+            await settledBetsUnpaidVM.ExecuteResponseToResponseCommand(betId);
 
             TabsHomeViewModel tabsVM = new TabsHomeViewModel();
             tabsVM.RefreshCommand.Execute(null);

@@ -3,6 +3,7 @@ using BetBook.Services;
 using BetBook.Views;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,17 +31,6 @@ namespace BetBook.ViewModels
             }
         }
 
-        string betBackgroundColor;
-        public string BetBackgroundColor
-        {
-            get => betBackgroundColor;
-            set
-            {
-                betBackgroundColor = value;
-                OnPropertyChanged();
-            }
-        }
-
         bool requestModeOpposite;
         public bool RequestModeOpposite
         {
@@ -59,6 +49,17 @@ namespace BetBook.ViewModels
             set
             {
                 postSettlementRequestText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        string postSettlementBackgroundColor;
+        public string PostSettlementBackgroundColor
+        {
+            get => postSettlementBackgroundColor;
+            set
+            {
+                postSettlementBackgroundColor = value;
                 OnPropertyChanged();
             }
         }
@@ -97,6 +98,7 @@ namespace BetBook.ViewModels
         }
 
         public UserData User { get; set; }
+        public Rg.Plugins.Popup.Pages.PopupPage Popup { get; set; }
 
         public ActiveBetsViewModel()
         {
@@ -104,6 +106,7 @@ namespace BetBook.ViewModels
             RefreshCommand = new Command(() => ExecuteRefreshCommand());
         }
 
+        public ICommand ButtonTappedCommand { get; }
         public ICommand RefreshCommand { get; }
         void ExecuteRefreshCommand()
         {
@@ -116,11 +119,6 @@ namespace BetBook.ViewModels
                 {
                     ActiveBetsViewModel settledBet = JsonConvert.DeserializeObject<ActiveBetsViewModel>(JsonConvert.SerializeObject(User.BetList.ElementAt(i)));
 
-                    if (User.BetList.ElementAt(i).DateTimeBetClose.Contains(" (Now)"))
-                    {
-                        settledBet.BetBackgroundColor = "MediumPurple";
-                    }
-
                     if (User.BetList.ElementAt(i).RequestResponse != null)
                     {
                         settledBet.RequestModeOpposite = false;
@@ -131,26 +129,14 @@ namespace BetBook.ViewModels
                     {
                         settledBet.CashOrNotText = User.BetList.ElementAt(i).NonCashBet == null ? User.BetList.ElementAt(i).CashBetAmount : User.BetList.ElementAt(i).NonCashBet;
                         settledBet.RequestModeOpposite = !settledBet.RequestMode;
-                        settledBet.PostSettlementRequestText = User.BetList.ElementAt(i).InitiatedRequest == true ? "Verifying with opponent" : "Opponent's requested settlement";                    
+                        settledBet.PostSettlementRequestText = User.BetList.ElementAt(i).InitiatedRequest == true ? "Verifying with opponent" : "Opponent's requested settlement";
+                        settledBet.PostSettlementBackgroundColor = User.BetList.ElementAt(i).InitiatedRequest == true ? "LightGray" : "#FF4081";                        
                         settledBet.BetPaidEnabled = User.BetList.ElementAt(i).InitiatedRequest == true ? false : true; //if user sent, disable. if user received, need to respond.
                         ActiveBets.Add(settledBet);
                     }
                     
                 }
             }
-        }
-
-        public async Task ExecuteRequestResponseCommand(string betId)
-        {
-            string response = ActiveBets.FirstOrDefault(offers => offers.BetId == betId).RequestResponse;
-
-            await Application.Current.MainPage.DisplayAlert(response, null, "Ok");
-
-            User.BetList.FirstOrDefault(offers => offers.BetId == betId).RequestResponse = null;
-
-            await CosmoDBService.UpdateUser(User);
-
-            ExecuteRefreshCommand();
         }
 
         public async Task ExecuteRequestSettlementCommand(string betId)
@@ -160,22 +146,23 @@ namespace BetBook.ViewModels
 
             if (opponent.BetList.FirstOrDefault(offers => offers.BetId == betId).RequestResponse != null)
             {
-                await Application.Current.MainPage.DisplayAlert("Opponent has not read you response yet", null, "Ok");
+                await ShowPopup("Opponent has not read your response yet.");
                 return;
             }
 
-            bool betWon = await Application.Current.MainPage.DisplayAlert("Did you win this bet?", null, "Yes", "No");
+            bool betWon = await ShowPopup("Did you win this bet?");
+
             bool betPaid = false;
 
             await Task.Delay(200);
 
             if (betWon)
-            {
-                betPaid = await Application.Current.MainPage.DisplayAlert("Did your opponent pay you?", null, "Yes", "No");
+            {                
+                betPaid = await ShowPopup("Did your opponent pay you?");
             }
             else
             {
-                betPaid = await Application.Current.MainPage.DisplayAlert("Did you pay you opponent?", null, "Yes", "No");
+                betPaid = await ShowPopup("Did you pay you opponent?");                
             }
 
             for (int i = 0; i < User.BetList.Count(); i++)
@@ -206,7 +193,7 @@ namespace BetBook.ViewModels
             ExecuteRefreshCommand();
         }
 
-        public async Task ExecuteSettleBetCommand(string betId)
+        public async Task ExecuteResponseToRequestCommand(string betId)
         {
             var termSheet = ActiveBets.FirstOrDefault(offers => offers.BetId == betId);            
             var opponentUsername = termSheet.OpponentsUsername;
@@ -217,11 +204,11 @@ namespace BetBook.ViewModels
 
             if (termSheet.BetWon)
             {
-                agreeToBetResultClaim = await Application.Current.MainPage.DisplayAlert("Your opponent is claiming that you have won the bet. Is this true?", null, "Yes", "No");                
+                agreeToBetResultClaim = await ShowPopup("Your opponent is claiming that you have won the bet. Is this true?");                
             }
             else
             {
-                agreeToBetResultClaim = await Application.Current.MainPage.DisplayAlert("Your opponent is claiming to have won the bet. Is this true?", null, "Yes", "No");
+                agreeToBetResultClaim = await ShowPopup("Your opponent is claiming to have won the bet. Is this true?");
             }
             
             if (agreeToBetResultClaim == false)
@@ -245,7 +232,7 @@ namespace BetBook.ViewModels
                         opponent.BetList.ElementAt(i).BetWon = false;
                         opponent.BetList.ElementAt(i).BetPaid = false;
                         opponent.BetList.ElementAt(i).InitiatedRequest = false;
-                        opponent.BetList.ElementAt(i).RequestResponse = "Opponent disagrees with the bet result";                        
+                        opponent.BetList.ElementAt(i).RequestResponse = "Opponent disagrees with the bet result.";                        
                     }
                 }
 
@@ -261,27 +248,27 @@ namespace BetBook.ViewModels
             {
                 if (termSheet.BetWon)
                 {
-                    agreeToBetPaymentClaim = await Application.Current.MainPage.DisplayAlert("Your opponent is claiming to have paid you. Is this true?", null, "Yes", "No");
+                    agreeToBetPaymentClaim = await ShowPopup("Your opponent is claiming to have paid you. Is this true?");
                 }
                 else
                 {
-                    agreeToBetPaymentClaim = await Application.Current.MainPage.DisplayAlert("Your opponent is claiming that you have paid them. Is this true?", null, "Yes", "No");
+                    agreeToBetPaymentClaim = await ShowPopup("Your opponent is claiming that you have paid them. Is this true?");
                 }
             }
             else if (!termSheet.BetPaid)
             {
                 if (termSheet.BetWon)
                 {
-                    agreeToBetPaymentClaim = await Application.Current.MainPage.DisplayAlert("Your opponent is claiming that they have not paid you. Is this true?", null, "Yes", "No");
+                    agreeToBetPaymentClaim = await ShowPopup("Your opponent is claiming that they have not paid you. Is this true?");
                 }
                 else
                 {
-                    agreeToBetPaymentClaim = await Application.Current.MainPage.DisplayAlert("Your opponent is claiming that you have not paid them. Is this true?", null, "Yes", "No");
+                    agreeToBetPaymentClaim = await ShowPopup("Your opponent is claiming that you have not paid them. Is this true?");
                 }
             }
 
             termSheet.BetPaid = agreeToBetPaymentClaim == false ? false : termSheet.BetPaid;
-
+            
             if (termSheet.BetWon && termSheet.BetPaid)
             {
                 for (int i = 0; i < User.BetList.Count(); i++)
@@ -290,7 +277,9 @@ namespace BetBook.ViewModels
                     {
                         User.BetList.ElementAt(i).BetPhase = "SettledPaid";
                         User.BetList.ElementAt(i).RequestMode = false;
-                        User.BetList.ElementAt(i).InitiatedRequest = false;              
+                        User.BetList.ElementAt(i).InitiatedRequest = false;
+                        User.BetList.ElementAt(i).DateTimeBetSettled = DateTime.Now.ToString();
+                        User.BetList.ElementAt(i).DateTimePaid = "Same as settled";
                         User.UserResults.BetsWon++;
                         if (User.BetList.ElementAt(i).CashBetAmount != null)
                         {
@@ -307,7 +296,9 @@ namespace BetBook.ViewModels
                         opponent.BetList.ElementAt(i).BetPhase = "SettledPaid";
                         opponent.BetList.ElementAt(i).RequestMode = false;
                         opponent.BetList.ElementAt(i).InitiatedRequest = false;
-                        opponent.BetList.ElementAt(i).RequestResponse = "Opponent accepts request";
+                        opponent.BetList.ElementAt(i).DateTimeBetSettled = DateTime.Now.ToString();
+                        opponent.BetList.ElementAt(i).DateTimePaid = "Same as settled";
+                        //opponent.BetList.ElementAt(i).RequestResponse = "Opponent accepts request";
                         opponent.UserResults.BetsLost++;
                         if (opponent.BetList.ElementAt(i).CashBetAmount != null)
                         {
@@ -325,7 +316,8 @@ namespace BetBook.ViewModels
                     {
                         User.BetList.ElementAt(i).BetPhase = "SettledUnpaid";
                         User.BetList.ElementAt(i).RequestMode = false;
-                        User.BetList.ElementAt(i).InitiatedRequest = false;                        
+                        User.BetList.ElementAt(i).InitiatedRequest = false;
+                        User.BetList.ElementAt(i).DateTimeBetSettled = DateTime.Now.ToString();
                         User.BetList.ElementAt(i).BetPaid = false;
                         User.UserResults.BetsWon++;
                         if (User.BetList.ElementAt(i).CashBetAmount != null)
@@ -343,8 +335,9 @@ namespace BetBook.ViewModels
                         opponent.BetList.ElementAt(i).BetPaid = false;
                         opponent.BetList.ElementAt(i).RequestMode = false;
                         opponent.BetList.ElementAt(i).InitiatedRequest = false;
-                        opponent.BetList.ElementAt(i).RequestResponse = agreeToBetPaymentClaim == false ?
-                            "Your opponent denies that bet payment has been settled. This bet will be moved to Settled Bets - Unpaid" : "Opponent accepts request";
+                        opponent.BetList.ElementAt(i).DateTimeBetSettled = DateTime.Now.ToString();
+                        //opponent.BetList.ElementAt(i).RequestResponse = agreeToBetPaymentClaim == false ?
+                        //    "Your opponent denies that bet payment has been settled. This bet will be moved to Settled Bets - Unpaid" : "Opponent accepts request";
                         opponent.UserResults.BetsLost += 1;
                         if (opponent.BetList.ElementAt(i).CashBetAmount != null)
                         {
@@ -362,6 +355,8 @@ namespace BetBook.ViewModels
                         User.BetList.ElementAt(i).BetPhase = "SettledPaid";
                         User.BetList.ElementAt(i).RequestMode = false;
                         User.BetList.ElementAt(i).InitiatedRequest = false;
+                        User.BetList.ElementAt(i).DateTimeBetSettled = DateTime.Now.ToString();
+                        User.BetList.ElementAt(i).DateTimePaid = "Same as settled";
                         User.UserResults.BetsLost++;
                         if (User.BetList.ElementAt(i).CashBetAmount != null)
                         {
@@ -378,7 +373,9 @@ namespace BetBook.ViewModels
                         opponent.BetList.ElementAt(i).BetPhase = "SettledPaid";
                         opponent.BetList.ElementAt(i).RequestMode = false;
                         opponent.BetList.ElementAt(i).InitiatedRequest = false;
-                        opponent.BetList.ElementAt(i).RequestResponse = "Opponent accepts request";
+                        opponent.BetList.ElementAt(i).DateTimeBetSettled = DateTime.Now.ToString();
+                        opponent.BetList.ElementAt(i).DateTimePaid = "Same as settled";
+                        //opponent.BetList.ElementAt(i).RequestResponse = "Opponent accepts request";
                         opponent.UserResults.BetsWon++;
                         if (opponent.BetList.ElementAt(i).CashBetAmount != null)
                         {
@@ -397,6 +394,7 @@ namespace BetBook.ViewModels
                         User.BetList.ElementAt(i).BetPhase = "SettledUnpaid";
                         User.BetList.ElementAt(i).RequestMode = false;
                         User.BetList.ElementAt(i).InitiatedRequest = false;
+                        User.BetList.ElementAt(i).DateTimeBetSettled = DateTime.Now.ToString();
                         User.UserResults.BetsLost += 1;
                         if (User.BetList.ElementAt(i).CashBetAmount != null)
                         {
@@ -412,8 +410,9 @@ namespace BetBook.ViewModels
                         opponent.BetList.ElementAt(i).BetPhase = "SettledUnpaid";
                         opponent.BetList.ElementAt(i).RequestMode = false;
                         opponent.BetList.ElementAt(i).InitiatedRequest = false;
-                        opponent.BetList.ElementAt(i).RequestResponse = agreeToBetPaymentClaim == false ?
-                            "Your opponent denies that bet payment has been settled. This bet will be moved to Settled Bets - Unpaid" : "Opponent accepts request";
+                        opponent.BetList.ElementAt(i).DateTimeBetSettled = DateTime.Now.ToString();
+                        //opponent.BetList.ElementAt(i).RequestResponse = agreeToBetPaymentClaim == false ?
+                        //    "Your opponent denies that bet payment has been settled. This bet will be moved to Settled Bets - Unpaid" : "Opponent accepts request";
                         if (opponent.BetList.ElementAt(i).CashBetAmount != null)
                         {
                             opponent.UserResults.BetsWon++;
@@ -435,5 +434,17 @@ namespace BetBook.ViewModels
             ExecuteRefreshCommand();            
         }
 
+        public async Task ExecuteResponseToResponseCommand(string betId)
+        {
+            string response = ActiveBets.FirstOrDefault(offers => offers.BetId == betId).RequestResponse;
+
+            await ShowPopup(response);
+
+            User.BetList.FirstOrDefault(offers => offers.BetId == betId).RequestResponse = null;
+
+            await CosmoDBService.UpdateUser(User);
+
+            ExecuteRefreshCommand();
+        }
     }
 }

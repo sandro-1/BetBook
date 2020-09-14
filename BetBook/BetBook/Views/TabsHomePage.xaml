@@ -6,41 +6,24 @@
              xmlns:local="clr-namespace:BetBook.ViewModels"
              mc:Ignorable="d"
              x:Class="BetBook.Views.TabsHomePage"             
-             BarBackgroundColor="WhiteSmoke"
+             BarBackgroundColor="White"
              BarTextColor="Black">
-    
+
 
     <TabbedPage.BindingContext>
         <local:TabsHomeViewModel/>
     </TabbedPage.BindingContext>
-    
+
     <NavigationPage.TitleView>
-        <Grid>
+        <Grid BackgroundColor="White">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Label Text="{Binding User.Username}" Grid.Row="0" Grid.ColumnSpan="3" FontSize="Large" TextColor="Black" Margin="0, 15, 0, 0"/>
-
-            <Label Text="Bets Won/Lost" TextDecorations="Underline" Grid.Column="0" Grid.Row="1" TextColor="Black"/>
-            <Label Text="{Binding BetsWonLost}" Grid.Column="0" Grid.Row="2" TextColor="Black"/>
-
-            <Label Text="Cash Won/Lost" TextDecorations="Underline" Grid.Column="1" Grid.Row="1" TextColor="Black"/>
-            <Label Text="{Binding CashWonLost}" Grid.Column="1" Grid.Row="2" TextColor="Black"/>
-
-            <Label Text="Pays Debts" TextDecorations="Underline" Grid.Column="2" Grid.Row="1" TextColor="Black"/>
-            <Label Text="{Binding User.UserResults.CredibilityRatio, StringFormat='{0:F0}%'}" Grid.Column="2" Grid.Row="2" TextColor="Black"/>
-
-            <Label Text="Collects Debts" TextDecorations="Underline" Grid.Column="3" Grid.Row="1" TextColor="Black"/>
-            <Label Text="{Binding User.UserResults.CollectionRatio, StringFormat='{0:F0}%'}" Grid.Column="3" Grid.Row="2" TextColor="Black"/>
+            <Label Text="{Binding User.Username}"  FontSize="Large" TextColor="Black" FontAttributes="Bold" />
 
         </Grid>
     </NavigationPage.TitleView>

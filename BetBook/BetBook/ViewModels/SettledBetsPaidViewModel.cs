@@ -36,13 +36,24 @@ namespace BetBook.ViewModels
             }
         }
 
-        string betBackgroundColor;
-        public string BetBackgroundColor
+        string resultBackgroundColor;
+        public string ResultBackgroundColor
         {
-            get => betBackgroundColor;
+            get => resultBackgroundColor;
             set
             {
-                betBackgroundColor = value;
+                resultBackgroundColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        string result;
+        public string Result
+        {
+            get => result;
+            set
+            {
+                result = value;
                 OnPropertyChanged();
             }
         }
@@ -63,7 +74,8 @@ namespace BetBook.ViewModels
                 if (User.BetList.ElementAt(i).BetPhase == "SettledPaid")
                 {
                     SettledBetsPaidViewModel settledBet = JsonConvert.DeserializeObject<SettledBetsPaidViewModel>(JsonConvert.SerializeObject(User.BetList.ElementAt(i)));
-                    settledBet.betBackgroundColor = settledBet.BetWon == true ? "LightGreen" : "PeachPuff";
+                    settledBet.Result = settledBet.BetWon == true ? "Won" : "Lost";
+                    settledBet.resultBackgroundColor = settledBet.BetWon == true ? "#FF4081" : "LightSlateGray";
                     settledBet.CashOrNotText = settledBet.NonCashBet ?? settledBet.CashBetAmount;
                     SettledBetsPaid.Add(settledBet);
                 }

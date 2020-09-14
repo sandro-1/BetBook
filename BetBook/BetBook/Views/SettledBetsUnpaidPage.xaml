@@ -8,19 +8,57 @@
              Title="Settled Bets - Unpaid">
     <ContentPage.Content>
         <StackLayout>
-            <ListView ItemsSource="{Binding SettledBetsUnpaid}" HasUnevenRows="True">
+            <ListView ItemsSource="{Binding SettledBetsUnpaid}" BackgroundColor="WhiteSmoke" SelectionMode="None" SeparatorVisibility="None"  HasUnevenRows="True">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout>
-                                <StackLayout BackgroundColor="{Binding BetBackgroundColor}">
-                                    <Label Text="{Binding OpponentsUsername, StringFormat='Opponent: {0:F0}'}"/>
-                                    <Label Text="{Binding CashOrNotText, StringFormat='Bet Amount: {0:F0}'}"/>
-                                    <Label Text="{Binding BetTerms, StringFormat='Bet Terms: {0:F0}'}"/>
-                                    <Button Text="Request settlement" Clicked="RequestSettlement" IsVisible="{Binding RequestModeOpposite}" CommandParameter="{Binding BetId}"/>
-                                    <Button Text="{Binding PostSettlementRequestText}" Clicked="BetPaid" IsEnabled="{Binding BetPaidEnabled}" IsVisible="{Binding RequestMode}" CommandParameter="{Binding BetId}"/>
+                            <Frame CornerRadius="10" OutlineColor="WhiteSmoke" Padding="3,3,3,3" Margin="5,5,5,5">
+
+                                <StackLayout BackgroundColor="White" Padding="5,5,5,5">
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Opponent " TextColor="Black" FontAttributes="Bold"/>
+                                                <Span Text="{Binding OpponentsUsername}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Amount " TextColor="Black" FontAttributes="Bold" />
+                                                <Span Text="{Binding CashOrNotText}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Bet Terms " TextColor="Black" FontAttributes="Bold" />
+                                                <Span Text="{Binding BetTerms}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Settled " TextColor="Black" FontAttributes="Bold" />
+                                                <Span Text="{Binding DateTimeBetSettled}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Button Text="Resolve Payment" Clicked="RequestSettlement" TextColor="White" BackgroundColor="LightSlateGray" Opacity=".8" CornerRadius="10" IsVisible="{Binding RequestModeOpposite}" CommandParameter="{Binding BetId}"/>
+
+                                    <Button Text="{Binding PostSettlementRequestText}" Clicked="RespondToRequest" IsEnabled="{Binding BetPaidEnabled}" CornerRadius="10" TextColor="White" BackgroundColor="{Binding PostSettlementBackgroundColor}" Opacity=".8" IsVisible="{Binding RequestMode}" CommandParameter="{Binding BetId}"/>
+
+                                    <Button Text="Opponent has responded" Clicked="RespondToResponse" BackgroundColor="#FF4081" Opacity=".8" TextColor="White" CornerRadius="10" IsVisible="{Binding RequestResponseVisible}" CommandParameter="{Binding BetId}"/>
                                 </StackLayout>
-                            </StackLayout>
+                                
+                            </Frame>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>

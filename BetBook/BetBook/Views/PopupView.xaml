@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             mc:Ignorable="d"
+             x:Class="BetBook.Views.PopupView">
+
+
+    <Grid Margin="20, 20, 20, 20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+    
+        <Frame CornerRadius="10" OutlineColor="WhiteSmoke" Padding="3,3,3,3" Margin="5,5,5,5" Grid.Row="2">
+            <StackLayout Margin="8"
+                     Padding="20"
+                     HorizontalOptions="Center"
+                     VerticalOptions="Center" BackgroundColor="White">
+                <Label Text="{Binding InputQuestion}" Margin="0,0,0,5" FontSize="Body" HorizontalOptions="Center"/>
+                <Grid IsVisible="{Binding YesNoVisible}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Text="Yes" Clicked="AnswerPopupQuestion" CommandParameter="True" CornerRadius="10" FontSize="Caption" TextColor="White" BackgroundColor="#FF4081" Opacity=".8" Grid.Column="0"/>
+                    <Button Text="No" Clicked="AnswerPopupQuestion" CommandParameter="False" CornerRadius="10" FontSize="Caption" TextColor="White" BackgroundColor="LightSlateGray" Opacity=".8" Grid.Column="1"/>
+                </Grid>
+                <Grid IsVisible="{Binding YesNoOpposite}">
+                    <Button Text="Ok" Clicked="AnswerPopupQuestion" CommandParameter="True" CornerRadius="10" TextColor="White" BackgroundColor="#FF4081" Opacity=".8"/>
+                </Grid>
+            </StackLayout>
+        </Frame>
+    </Grid>
+
+</pages:PopupPage>

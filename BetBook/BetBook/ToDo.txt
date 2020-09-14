@@ -1,10 +1,17 @@
 ﻿Current:
+- Finish changing all of the popups, then deal with the outside of the box click issue
 
-TEST THE ADDITIONS TO THE TERMSHEETS ON THE EACH OF THE PAGES
-
-MOVE THE PROJECT INTO THE CLOUD AND ALSO TO GET GOING ON THE APPLE VERSION OF THE PROJECT
+- App entering break state after both the clocks are set.
+- Dont forget back button handling for popup
 
 Docket:
+- GET GOING ON THE APPLE VERSION OF THE PROJECT
+- Currently the final responses in active bets dont give any info to the movement of bets to settled - unpaid, that's a problem
+- opponents requested settlement goes gray, only god knows why. fucking thing sucks.
+- Don't allow settlement to be requested until resolution date?
+- win pct needs setting up
+- line underneath name may need to be adjusted to fill screen not be fixed lengths
+- adj money rules for money figures place in the navbar, large amounts will throw off formatting. also limit name size for same reason
 - What happens to my timers if app is closed or device is shut off?
 - Consider other options for row with cash bet and toggle. maybe two buttons side by side with each option
 - Consider packaging warnings so invalid username and bet amount follow each other, instead of one popping up per sent offer
@@ -20,3 +27,4 @@ offers the user was interested in viewing
 - Sort out collection ratios. Should they start at 1 or 0?
 - reverse the display "yes" and "no" positions in activebetsviewmodel
 
+#FF4081

@@ -226,7 +226,7 @@ namespace BetBook.ViewModels
 
             UserData opponent = await CosmoDBService.GetUser(BetTermSheet.OpponentsUsername);
 
-            if (opponent == null)
+            if (opponent == null || opponent.Username == User.Username)
             {
                 await Xamarin.Forms.Application.Current.MainPage.DisplayAlert("Invalid opponent username", null, "Ok");
                 return;
@@ -329,8 +329,8 @@ namespace BetBook.ViewModels
             outputSheet.MyUsername = inputSheet.OpponentsUsername;
             outputSheet.OpponentsUsername = User.Username;
             outputSheet.DateTimeOffered = inputSheet.DateTimeOffered;
-            outputSheet.DateTimeAccepted = null;
-            outputSheet.DateTimeBetSettled = null;
+            outputSheet.DateTimeAccepted = null; 
+            outputSheet.DateTimeBetSettled = null; //next
             outputSheet.DateTimePaid = null;
             outputSheet.CashBetAmount = inputSheet.CashBetAmount;
             outputSheet.NonCashBet = inputSheet.NonCashBet;

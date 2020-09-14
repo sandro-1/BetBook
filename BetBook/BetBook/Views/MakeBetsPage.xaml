@@ -9,8 +9,8 @@
              Title="Make A Bet">
 
     <ContentPage.Content>
-        <StackLayout>
-            <Editor Placeholder="Enter Opponent's Username" Text="{Binding BetTermSheet.OpponentsUsername}" AutoSize="TextChanges"/>
+        <StackLayout BackgroundColor="WhiteSmoke">
+            <Editor Placeholder="Enter Opponent's Username" TextColor="Gray" Margin="0, 5" Text="{Binding BetTermSheet.OpponentsUsername}" FontAttributes="Bold" AutoSize="TextChanges"/>
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -23,10 +23,10 @@
                 <Editor Text="{Binding IsCashToggleText}" IsEnabled="False" Margin="4" FontSize="Body" Grid.Column="0"/>
                 <Switch IsToggled="{Binding IsCashToggle}" Toggled="OnToggled" Grid.Column="1" Margin="0, 0, 20, 0"/>
             </Grid>
-            
-            <Editor Placeholder="Enter Cash Bet Amount" Text="{Binding BetTermSheet.CashBetAmount}" IsVisible="{Binding IsCashToggle}" AutoSize="TextChanges"/>
-            <Editor Placeholder="Enter Non Cash Bet" Text="{Binding BetTermSheet.NonCashBet}" IsVisible="{Binding OppositeCashToggle}" AutoSize="TextChanges"/>
-            <Editor Placeholder="Enter The Terms Of The Bet" Text="{Binding BetTermSheet.BetTerms}" AutoSize="TextChanges"/>
+
+            <Editor Placeholder="Enter Cash Bet Amount" Text="{Binding BetTermSheet.CashBetAmount}" TextColor="Gray" FontAttributes="Bold" IsVisible="{Binding IsCashToggle}" AutoSize="TextChanges"/>
+            <Editor Placeholder="Enter Non Cash Bet" Text="{Binding BetTermSheet.NonCashBet}" TextColor="Gray" FontAttributes="Bold" IsVisible="{Binding OppositeCashToggle}" AutoSize="TextChanges"/>
+            <Editor Placeholder="Enter The Terms Of The Bet" Text="{Binding BetTermSheet.BetTerms}" TextColor="Gray" FontAttributes="Bold" AutoSize="TextChanges"/>
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -39,8 +39,8 @@
                 <Editor Text="Set Expiration For Offer" IsEnabled="False" Margin="4" FontSize="Body" Grid.Column="0"/>
                 <Switch IsToggled="{Binding IsExpirySet}" Grid.Column="1" Margin="0, 0, 20, 0"/>
             </Grid>
-            <DatePicker Date="{Binding ExpiryDate}" IsVisible="{Binding IsExpirySet}"/>
-            <TimePicker Time="{Binding ExpiryTime}" IsVisible="{Binding IsExpirySet}"/>
+            <DatePicker Date="{Binding ExpiryDate}" TextColor="Gray" FontAttributes="Bold" IsVisible="{Binding IsExpirySet}"/>
+            <TimePicker Time="{Binding ExpiryTime}" TextColor="Gray" FontAttributes="Bold" IsVisible="{Binding IsExpirySet}"/>
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -53,10 +53,10 @@
                 <Editor Text="Set Bet Resolution Date" IsEnabled="False" Margin="4" FontSize="Body" Grid.Column="0"/>
                 <Switch IsToggled="{Binding IsExpirySetBet}" Grid.Column="1" Margin="0, 0, 20, 0"/>
             </Grid>
-            <DatePicker Date="{Binding ExpiryDateBet}" IsVisible="{Binding IsExpirySetBet}"/>
-            <TimePicker Time="{Binding ExpiryTimeBet}" IsVisible="{Binding IsExpirySetBet}"/>
+            <DatePicker Date="{Binding ExpiryDateBet}" TextColor="Gray" FontAttributes="Bold" IsVisible="{Binding IsExpirySetBet}"/>
+            <TimePicker Time="{Binding ExpiryTimeBet}" TextColor="Gray" FontAttributes="Bold" IsVisible="{Binding IsExpirySetBet}"/>
 
-            <Button Text="Send offer" Clicked="SendOffer"/>
+            <Button Text="Send offer" CornerRadius="10" FontSize="Body" TextColor="White" BackgroundColor="LightSlateGray" FontAttributes="Bold" Margin="5, 0, 5, 0" Clicked="SendOffer"/>
             
         </StackLayout>
     </ContentPage.Content>

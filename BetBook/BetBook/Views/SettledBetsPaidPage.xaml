@@ -8,17 +8,59 @@
              Title="Settled Bets - Paid">
     <ContentPage.Content>
         <StackLayout>
-            <ListView ItemsSource="{Binding SettledBetsPaid}" HasUnevenRows="True">
+            <ListView ItemsSource="{Binding SettledBetsPaid}" SelectionMode="None" BackgroundColor="WhiteSmoke"  SeparatorVisibility="None" HasUnevenRows="True" Margin="4">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout>
-                                <StackLayout BackgroundColor="{Binding BetBackgroundColor}">
-                                    <Label Text="{Binding OpponentsUsername, StringFormat='Opponent: {0:F0}'}"/>
-                                    <Label Text="{Binding CashOrNotText, StringFormat='Bet Amount: {0:F0}'}"/>
-                                    <Label Text="{Binding BetTerms, StringFormat='Bet Terms: {0:F0}'}"/>
+                            <Frame CornerRadius="10" OutlineColor="WhiteSmoke" Padding="3,3,3,3" Margin="5,5,5,5">
+                                <StackLayout Padding="5,5,5,5" BackgroundColor="White">
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Opponent " TextColor="Black" FontAttributes="Bold"/>
+                                                <Span Text="{Binding OpponentsUsername}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Amount " TextColor="Black" FontAttributes="Bold" />
+                                                <Span Text="{Binding CashOrNotText}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Bet Terms " TextColor="Black" FontAttributes="Bold" />
+                                                <Span Text="{Binding BetTerms}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Settled " TextColor="Black" FontAttributes="Bold" />
+                                                <Span Text="{Binding DateTimeBetSettled}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Paid " TextColor="Black" FontAttributes="Bold" />
+                                                <Span Text="{Binding DateTimePaid}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Button Text="{Binding Result}" CornerRadius="10" TextColor="White" Opacity=".8" BackgroundColor="{Binding ResultBackgroundColor}"/>
                                 </StackLayout>
-                            </StackLayout>
+                            </Frame>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>

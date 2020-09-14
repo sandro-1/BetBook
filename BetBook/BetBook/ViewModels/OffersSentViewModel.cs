@@ -37,7 +37,16 @@ namespace BetBook.ViewModels
             }
         }
 
-        UserData User { get; set; }
+        UserData user;
+        public UserData User
+        {
+            get => user;
+            set
+            {
+                user = value;
+                OnPropertyChanged();
+            }
+        }
 
         public OffersSentViewModel()
         {
