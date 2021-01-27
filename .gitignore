@@ -187,6 +187,9 @@ publish/
 # in these scripts will be unencrypted
 PublishScripts/
 
+#Shared
+**/[Ss]hared/*
+
 # NuGet Packages
 *.nupkg
 # The packages folder can be ignored because of Package Restore
