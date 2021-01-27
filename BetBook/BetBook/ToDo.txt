@@ -1,30 +1,17 @@
 ﻿Current:
-- Finish changing all of the popups, then deal with the outside of the box click issue
-
-- App entering break state after both the clocks are set.
-- Dont forget back button handling for popup
+- Get notification above tabs when something happens
 
 Docket:
-- GET GOING ON THE APPLE VERSION OF THE PROJECT
-- Currently the final responses in active bets dont give any info to the movement of bets to settled - unpaid, that's a problem
-- opponents requested settlement goes gray, only god knows why. fucking thing sucks.
-- Don't allow settlement to be requested until resolution date?
-- win pct needs setting up
-- line underneath name may need to be adjusted to fill screen not be fixed lengths
-- adj money rules for money figures place in the navbar, large amounts will throw off formatting. also limit name size for same reason
-- What happens to my timers if app is closed or device is shut off?
-- Consider other options for row with cash bet and toggle. maybe two buttons side by side with each option
+- Seems to log me out after about 5 minutes in one instace (can set in debug mode and see if any errors present themselves)
+- Potentially color the resolution time/offer expiry time by default
+- An offer without an offer expiration but with a bet resolution date should probably erase itself?
+
 - Consider packaging warnings so invalid username and bet amount follow each other, instead of one popping up per sent offer
 - Current try parse on make a bet is for integers, that would prevent doubles from being used
-- Add color to buttons in some way to indicate the messages are being received and sent
-- When display alert pops up, clicking outside of box removes the box, presumably returning false?
-- Make userresult more readable
-- Settled Bets - Paid: label whether bet was won or lost
-- Settled Bets - Unpaid: label whether bet was won or lost
-- Clear login info on logout
-- make offersreceived tab move to active bets? would be nice if there was just one offer received, problematic if there were multiple
-offers the user was interested in viewing
-- Sort out collection ratios. Should they start at 1 or 0?
-- reverse the display "yes" and "no" positions in activebetsviewmodel
 
-#FF4081
+
+- GET GOING ON THE APPLE VERSION OF THE PROJECT
+
+
+Be easier with two phone:
+- offers sent during login dont seem to appear

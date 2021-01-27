@@ -19,6 +19,11 @@ namespace BetBook.Views
             InitializeComponent();
             settledBetsPaidVM = new SettledBetsPaidViewModel();
             BindingContext = settledBetsPaidVM;
+
+            MessagingCenter.Subscribe<object, bool>(Application.Current, "RefreshPages", (sender, arg) =>
+            {
+                settledBetsPaidVM.RefreshCommand.Execute(null);
+            });
         }
 
         protected override void OnAppearing()

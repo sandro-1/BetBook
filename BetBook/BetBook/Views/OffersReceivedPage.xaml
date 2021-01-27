@@ -10,7 +10,7 @@
 
     <ContentPage.Content>
         <StackLayout>
-            <ListView ItemsSource="{Binding OffersReceived}" SelectionMode="None" BackgroundColor="WhiteSmoke" SeparatorVisibility="None" HasUnevenRows="true">
+            <ListView ItemsSource="{Binding OffersReceived}" SelectionMode="None" BackgroundColor="{Binding TestColor}" SeparatorVisibility="None" HasUnevenRows="true">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>

@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Microsoft.Azure.WebJobs;
+using BetBook.Services;
 
 namespace BetBook.Views
 {
@@ -15,21 +17,24 @@ namespace BetBook.Views
     public partial class ActiveBetsPage : ContentPage
     {
         ActiveBetsViewModel activeBetsVM;
+        
         public ActiveBetsPage()
         {
             InitializeComponent();
             activeBetsVM = new ActiveBetsViewModel();
             BindingContext = activeBetsVM;
 
-            MessagingCenter.Subscribe<object, bool>(this, "BetClosed", (sender, arg) =>
-            {
-                activeBetsVM.RefreshCommand.Execute(null);
-            });
+            //MessagingCenter.Subscribe<object, bool>(Application.Current, "Refresh", (sender, arg) =>
+            //{
+            //    activeBetsVM.RefreshCommand.Execute(null);
+            //});
         }
+
         protected override void OnAppearing()
         {
-            base.OnAppearing();
+            base.OnAppearing();            
             activeBetsVM.RefreshCommand.Execute(null);
+            //activeBetsVM.CheckEffectExpiry(null);
         }
         public async void RequestSettlement(Object Sender, EventArgs args)
         {

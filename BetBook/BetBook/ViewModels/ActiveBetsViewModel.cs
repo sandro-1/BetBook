@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -18,7 +19,7 @@ using Xamarin.Forms.Markup;
 
 namespace BetBook.ViewModels
 {
-    class ActiveBetsViewModel : ViewModelEventHandler
+    public class ActiveBetsViewModel : ViewModelEventHandler
     {
         ObservableCollection<ActiveBetsViewModel> activeBets;
         public ObservableCollection<ActiveBetsViewModel> ActiveBets
@@ -49,6 +50,39 @@ namespace BetBook.ViewModels
             set
             {
                 postSettlementRequestText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        bool dateTimeBetCloseVisible;
+        public bool DateTimeBetCloseVisible
+        {
+            get => dateTimeBetCloseVisible;
+            set
+            {
+                dateTimeBetCloseVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        string betResolutionTextColor;
+        public string BetResolutionTextColor
+        {
+            get => betResolutionTextColor;
+            set
+            {
+                betResolutionTextColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        string betResolutionTextLocal;
+        public string BetResolutionTextLocal
+        {
+            get => betResolutionTextLocal;
+            set
+            {
+                betResolutionTextLocal = value;
                 OnPropertyChanged();
             }
         }
@@ -104,20 +138,49 @@ namespace BetBook.ViewModels
         {
             User = LoginViewModel.loggedUser;
             RefreshCommand = new Command(() => ExecuteRefreshCommand());
+
+            DateTime nearestMinute = RoundUp(DateTime.Now, TimeSpan.FromMinutes(1));
+            TimeSpan nearestMinuteDifference = nearestMinute - DateTime.Now;
+            int formattedDifference = (int)nearestMinuteDifference.TotalMilliseconds;
+
+            TimerCallback tmCallback = RefreshCommand.Execute;
+            Timer timer = new Timer(tmCallback, null, formattedDifference, 60000);
         }
 
         public ICommand ButtonTappedCommand { get; }
         public ICommand RefreshCommand { get; }
         void ExecuteRefreshCommand()
         {
-            ActiveBets = new ObservableCollection<ActiveBetsViewModel>();
             User = LoginViewModel.loggedUser;
-            
+            ActiveBets = new ObservableCollection<ActiveBetsViewModel>();
+
             for (int i = 0; i < User.BetList.Count; i++)
             {
                 if (User.BetList.ElementAt(i).BetPhase == "ActiveBet")
                 {
                     ActiveBetsViewModel settledBet = JsonConvert.DeserializeObject<ActiveBetsViewModel>(JsonConvert.SerializeObject(User.BetList.ElementAt(i)));
+
+                    if (settledBet.DateTimeBetClose != "None")
+                    {
+                        bool betReminder = false;
+
+                        DateTime reminderExpiry = DateTime.Parse(settledBet.DateTimeBetClose);
+                        TimeSpan timeLeftExpiry = reminderExpiry - DateTime.Now;
+                        betReminder = timeLeftExpiry.TotalMilliseconds < 0;
+
+                        if (betReminder)
+                        {
+                            settledBet.DateTimeBetClose += " (Now)";
+                            settledBet.BetResolutionTextColor = "#FF4081";                            
+                        }
+
+                        settledBet.DateTimeBetCloseVisible = true;
+                    }
+
+                    //if (settledBet.DateTimeBetClose.Contains("Now"))
+                    //{
+                    //    settledBet.BetResolutionTextColor = "#FF4081";
+                    //}                                        
 
                     if (User.BetList.ElementAt(i).RequestResponse != null)
                     {
@@ -133,12 +196,92 @@ namespace BetBook.ViewModels
                         settledBet.PostSettlementBackgroundColor = User.BetList.ElementAt(i).InitiatedRequest == true ? "LightGray" : "#FF4081";                        
                         settledBet.BetPaidEnabled = User.BetList.ElementAt(i).InitiatedRequest == true ? false : true; //if user sent, disable. if user received, need to respond.
                         ActiveBets.Add(settledBet);
-                    }
-                    
+                    }                    
                 }
             }
+            //CheckEffectExpiry();
         }
 
+        public void CheckEffectExpiry()
+        {
+            //bool adjMade = false;
+            if (ActiveBets != null)
+            {
+                for (int i = 0; i < ActiveBets.Count; i++)
+                {                
+                    bool betReminder = false;
+
+                    string closeTime = ActiveBets.ElementAt(i).DateTimeBetClose;
+                    bool isNow = false;
+
+                    //if (ActiveBets.ElementAt(i).BetResolutionTextLocal == null)
+                    //{
+                    //    isNow = false;
+                    //}
+                    //else
+                    //{
+                    //    isNow = ActiveBets.ElementAt(i).BetResolutionTextLocal.Contains("Now");
+                    //}
+
+
+
+                    isNow = ActiveBets.ElementAt(i).DateTimeBetClose.Contains("Now");
+
+                    if (isNow)
+                    {
+                        continue;
+                    }
+
+
+
+                    if (closeTime != "None") 
+                    {
+                        DateTime reminderExpiry = DateTime.Parse(ActiveBets.ElementAt(i).DateTimeBetClose);
+                        TimeSpan timeLeftExpiry = reminderExpiry - DateTime.Now;
+                        betReminder = timeLeftExpiry.TotalMilliseconds < 0;
+                    }
+
+
+                    if (betReminder)
+                    {   
+                        //int index = LoginViewModel.loggedUser.BetList.FindIndex(bet => bet.BetId == ActiveBets.ElementAt(i).BetId);
+                        //LoginViewModel.loggedUser.BetList.ElementAt(index).DateTimeBetClose = closeTime + " (Now)";
+                        ActiveBets.ElementAt(i).DateTimeBetClose = closeTime + " (Now)"; 
+                        ActiveBets.ElementAt(i).BetResolutionTextColor = "#FF4081";
+
+                        //for (int a = 0; a < User.BetList.Count(); a++)
+                        //{
+                        //    if (User.BetList.ElementAt(a).BetId == ActiveBets.ElementAt(i).BetId)
+                        //    {
+                        //        User.BetList.ElementAt(a).DateTimeBetClose = ActiveBets.ElementAt(i).DateTimeBetClose;
+                        //    }
+                        //}
+
+                        //UserData opponent = await CosmoDBService.GetUser(ActiveBets.ElementAt(i).OpponentsUsername);
+                        //for (int b = 0; b < opponent.BetList.Count(); b++)
+                        //{
+                        //    if (opponent.BetList.ElementAt(b).BetId == ActiveBets.ElementAt(i).BetId)
+                        //    {
+                        //        opponent.BetList.ElementAt(b).DateTimeBetClose = ActiveBets.ElementAt(i).DateTimeBetClose;
+                        //    }
+                        //}
+
+                        //await CosmoDBService.UpdateUser(opponent);
+                        //await CosmoDBService.UpdateUser(User);
+
+
+                        //adjMade = true;
+
+                        //ActiveBets.ElementAt(i).BetResolutionTextLocal = closeTime + " (Now)";
+                    }        
+                }
+            }
+            //if (adjMade)
+            //{
+            //ExecuteRefreshCommand();
+                //Task.Run(async() => await CosmoDBService.UpdateUser(LoginViewModel.loggedUser));            
+            //}
+        }
         public async Task ExecuteRequestSettlementCommand(string betId)
         {
             ActiveBetsViewModel activeBetTermSheet = ActiveBets.FirstOrDefault(offers => offers.BetId == betId);

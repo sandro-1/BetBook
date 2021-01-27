@@ -20,10 +20,10 @@ namespace BetBook.Views
             InitializeComponent();
             makeBetsVM = new MakeBetsViewModel();
             BindingContext = makeBetsVM;
-            MessagingCenter.Subscribe<object, bool>(this, "RemoveOffer", (sender, arg) =>
-            {
-                makeBetsVM.RefreshCommand.Execute(null);                
-            });            
+            //MessagingCenter.Subscribe<object, bool>(this, "RemoveOffer", (sender, arg) =>
+            //{
+            //    makeBetsVM.RefreshCommand.Execute(null);
+            //});
         }
 
         public async void SendOffer(Object Sender, EventArgs args)
@@ -36,25 +36,30 @@ namespace BetBook.Views
                 tab.CurrentPage = tab.Children[0];  
             }
 
-            var difference = makeBetsVM.ExpiryDateTime - DateTime.Now;
-            var betDifference = makeBetsVM.ExpiryDateTimeBet - DateTime.Now;
+            //var difference = (makeBetsVM.ExpiryDateTime - DateTime.Now);
+            //var betDifference = makeBetsVM.ExpiryDateTimeBet - DateTime.Now;
 
-            if (makeBetsVM.IsExpirySet)
-            {
-                await makeBetsVM.ExecuteWithdrawal((long)difference.TotalMilliseconds, makeBetsVM.BetTermSheet.BetId, true);
-                MessagingCenter.Send<object, bool>(this, "RemoveOffer", true);
-            }
+            //BetResolutionReminder(((long)betDifference.TotalMilliseconds - (long)1000), makeBetsVM.BetTermSheet.BetId);
 
-            if (makeBetsVM.IsExpirySetBet)
-            {
-                await makeBetsVM.ExecuteWithdrawal((long)betDifference.TotalMilliseconds, makeBetsVM.BetTermSheet.BetId, false);
-                MessagingCenter.Send<object, bool>(this, "BetClosed", true);
-            }
+            //if (makeBetsVM.IsExpirySet) 
+            //{
+            //    await makeBetsVM.ExecuteWithdrawal(((long)difference.TotalMilliseconds - (long)1000), makeBetsVM.BetTermSheet.BetId);                
+            //    MessagingCenter.Send<object, bool>(this, "RemoveOffer", true);
+            //}            
+        }
+
+        public async void BetResolutionReminder(long delay, string id)
+        {
+            //if (makeBetsVM.IsExpirySetBet)
+            //{
+            //    await makeBetsVM.ExecuteBetResolutionReminder(delay, id);                
+            //    MessagingCenter.Send<object, bool>(this, "BetClosed", true);
+            //}
         }
 
         protected override void OnAppearing()
         {
-            base.OnAppearing();
+            base.OnAppearing();            
             makeBetsVM.RefreshCommand.Execute(null);
         }
 

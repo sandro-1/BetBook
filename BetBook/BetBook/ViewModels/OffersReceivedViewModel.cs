@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -51,12 +52,68 @@ namespace BetBook.ViewModels
         {
             User = LoginViewModel.loggedUser;
             RefreshCommand = new Command(() => ExecuteRefreshCommand());
+
             AcceptOfferCommand = new Command<string>(async (betId) => await ExecuteAcceptOfferCommand(betId));
             DenyOfferCommand = new Command<string>(async (betId) => await ExecuteDenyOfferCommand(betId));
+
+            DateTime nearestMinute = RoundUp(DateTime.Now, TimeSpan.FromMinutes(1));
+            TimeSpan nearestMinuteDifference = nearestMinute - DateTime.Now;
+            int formattedDifference = (int)nearestMinuteDifference.TotalMilliseconds;
+
+            TimerCallback tmCallback = CheckEffectExpiry;
+            Timer timer = new Timer(tmCallback, "", formattedDifference, 60000);
+        }
+
+        public async void CheckEffectExpiry(object objectInfo) 
+        {
+            //bool refresh = true;
+            if (OffersReceived != null)
+            {
+                for (int i = 0; i < OffersReceived.Count; i++)
+                {
+                    bool isExpired = false;
+                    string offerExpiry = OffersReceived.ElementAt(i).DateTimeOfferExpiration;
+                    if (offerExpiry != "None")
+                    {
+                        DateTime offerExpiryDt = DateTime.Parse(offerExpiry);
+                        TimeSpan timeLeftExpiry = offerExpiryDt - DateTime.Now;
+                        isExpired = timeLeftExpiry.TotalMilliseconds <= 0;
+                    }
+
+                    if (isExpired)
+                    {
+                        //refresh = false;
+                        UserData opponent = await CosmoDBService.GetUser(OffersReceived.ElementAt(i).OpponentsUsername);
+                        for (int a = 0; a < User.BetList.Count(); a++)
+                        {
+                            if (User.BetList.ElementAt(a).BetId == OffersReceived.ElementAt(i).BetId)
+                            {
+                                User.BetList.RemoveAt(a);
+                            }
+                        }
+
+                        for (int b = 0; b < opponent.BetList.Count(); b++)
+                        {
+                            if (opponent.BetList.ElementAt(b).BetId == OffersReceived.ElementAt(i).BetId)
+                            {
+                                opponent.BetList.RemoveAt(b);
+                            }
+                        }
+                        await CosmoDBService.UpdateUser(opponent);
+                        await CosmoDBService.UpdateUser(User);
+                        OffersReceived.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            //if (refresh)
+            //{
+            //    ExecuteRefreshCommand();
+            //}
         }
 
         public ICommand RefreshCommand { get; }
-        void ExecuteRefreshCommand()
+        void ExecuteRefreshCommand() 
         {
             User = LoginViewModel.loggedUser;
             OffersReceived = new ObservableCollection<OffersReceivedViewModel>();
@@ -64,8 +121,8 @@ namespace BetBook.ViewModels
             for (int i = 0; i < offerList.Count(); i++)
             {
                 OffersReceivedViewModel offer = JsonConvert.DeserializeObject<OffersReceivedViewModel>(JsonConvert.SerializeObject(offerList.ElementAt(i)));
-                offer.CashOrNotText = offer.NonCashBet ?? offer.CashBetAmount; //assign noncashbet if it is not null else cashbetamount
-                OffersReceived.Add(offer);
+                offer.CashOrNotText = offer.NonCashBet ?? offer.CashBetAmount;
+                offersReceived.Add(offer);                
             }
         }
 
@@ -123,7 +180,6 @@ namespace BetBook.ViewModels
             await CosmoDBService.UpdateUser(opponent);
 
             ExecuteRefreshCommand();
-        }
-        
+        }        
     }
 }

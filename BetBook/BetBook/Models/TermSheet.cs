@@ -47,6 +47,9 @@ namespace BetBook.Models
         [JsonProperty("dateTimeBetClose")]
         public string DateTimeBetClose { get; set; }
 
+        [JsonProperty("betCloseReminder")]
+        public bool BetCloseReminder { get; set; }
+
         [JsonProperty("betPhase")]
         public string BetPhase { get; set; }
 

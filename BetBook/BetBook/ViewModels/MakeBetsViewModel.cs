@@ -211,9 +211,10 @@ namespace BetBook.ViewModels
         public async Task ExecuteSendOfferCommand()
         {
             ExpiryDateTime = ExpiryDate.Date + ExpiryTime;
+            TimeSpan offerExpiryCheck = ExpiryDateTime - DateTime.Now;
+
             ExpiryDateTimeBet = ExpiryDateBet.Date + ExpiryTimeBet;
-            
-            //handling for dates/times set behind current time
+            TimeSpan betCloseExpiryCheck = ExpiryDateTimeBet - DateTime.Now;
 
             int result;
             bool isNum = int.TryParse(BetTermSheet.CashBetAmount, out result);
@@ -234,8 +235,13 @@ namespace BetBook.ViewModels
             
             BetTermSheet.DateTimeOffered = DateTime.Now.ToString();
             
-            if (IsExpirySet)
+            if (IsExpirySet) //the below is commented out in order to test expiry timers more effectively
             {
+                //if (offerExpiryCheck.TotalSeconds < 298)
+                //{
+                //    await Xamarin.Forms.Application.Current.MainPage.DisplayAlert("Offer expiry must be at least 5 minutes from current time", null, "Ok");
+                //    return;
+                //}
                 BetTermSheet.DateTimeOfferExpiration = ExpiryDateTime.ToString();
             }
             else
@@ -243,8 +249,13 @@ namespace BetBook.ViewModels
                 BetTermSheet.DateTimeOfferExpiration = "None";
             }
 
-            if (IsExpirySetBet)
+            if (IsExpirySetBet) //the below is commented out in order to test expiry timers more effectively
             {
+                //if (betCloseExpiryCheck.TotalSeconds < 598)
+                //{
+                //    await Xamarin.Forms.Application.Current.MainPage.DisplayAlert("Bet expiry must be at least 10 minutes from current time", null, "Ok");
+                //    return;
+                //}
                 BetTermSheet.DateTimeBetClose = ExpiryDateTimeBet.ToString();
             }
             else
@@ -266,7 +277,7 @@ namespace BetBook.ViewModels
             LoginViewModel.loggedUser = User;
         }
 
-        public async Task ExecuteWithdrawal(long delay, string betId, bool isOffer)
+        public async Task ExecuteBetResolutionReminder(long delay, string betId)
         {
             while (delay > 0)
             {
@@ -278,7 +289,7 @@ namespace BetBook.ViewModels
             User = CosmoDBService.GetUser(User.Username).Result;
             TermSheet termSheet = User.BetList.FirstOrDefault(offers => offers.BetId == betId);
 
-            if (termSheet.BetPhase == "ActiveBet" && isOffer == true)
+            if (termSheet == null)
             {
                 return;
             }
@@ -289,14 +300,10 @@ namespace BetBook.ViewModels
             {
                 if (User.BetList.ElementAt(i).BetId == betId)
                 {
-                    if (isOffer)
-                    {
-                        User.BetList.RemoveAt(i);
-                    }
-                    else
-                    {
-                        User.BetList.ElementAt(i).DateTimeBetClose = User.BetList.ElementAt(i).DateTimeBetClose + " (Now)";
-                    }
+                    User.BetList.ElementAt(i).BetCloseReminder = true;
+                    User.BetList.ElementAt(i).DateTimeBetClose = User.BetList.ElementAt(i).DateTimeBetClose + " (Now)";
+                    await CosmoDBService.UpdateUser(User);
+                    break;
                 }
             }
 
@@ -304,21 +311,82 @@ namespace BetBook.ViewModels
             {
                 if (opponent.BetList.ElementAt(i).BetId == betId)
                 {
-                    if (isOffer)
+                    opponent.BetList.ElementAt(i).BetCloseReminder = true;
+                    opponent.BetList.ElementAt(i).DateTimeBetClose = opponent.BetList.ElementAt(i).DateTimeBetClose + " (Now)";
+                    await CosmoDBService.UpdateUser(opponent);
+                    break;
+                }
+            }
+
+            LoginViewModel.loggedUser = await CosmoDBService.GetUser(LoginViewModel.loggedUser.Username);
+        }
+
+        List<string> idTracker = new List<string>();
+        
+        public async Task ExecuteWithdrawal(long delay, string betId)
+        {            
+            while (delay > 0)
+            {
+                var currentDelay = delay > int.MaxValue ? int.MaxValue : (int)delay;
+                await Task.Delay(currentDelay);
+                delay -= currentDelay;
+            }
+
+            User = CosmoDBService.GetUser(User.Username).Result;
+            TermSheet termSheet = User.BetList.FirstOrDefault(offers => offers.BetId == betId);
+
+            if (termSheet.BetPhase == "ActiveBet")
+            {
+                return;
+            }
+
+            idTracker.Add(betId);
+            
+            UserData opponent = await CosmoDBService.GetUser(termSheet.OpponentsUsername);
+
+            for (int i = 0; i < User.BetList.Count(); i++)
+            {
+                if (User.BetList.ElementAt(i).BetId == betId)
+                {                    
+                    User.BetList.RemoveAt(i);
+                    await CosmoDBService.UpdateUser(User);
+                    break;
+                }
+            }
+
+            for (int i = 0; i < opponent.BetList.Count(); i++)
+            {
+                if (opponent.BetList.ElementAt(i).BetId == betId)
+                {
+                    opponent.BetList.RemoveAt(i);
+                    await CosmoDBService.UpdateUser(opponent);
+                    break;
+                }
+            }
+
+            for (int j = 0; j < idTracker.Count; j++)
+            {
+                for (int i = 0; i < opponent.BetList.Count(); i++)
+                {
+                    if (opponent.BetList.ElementAt(i).BetId == idTracker.ElementAt(j))
                     {
-                        opponent.BetList.RemoveAt(i);
+                        opponent.BetList.RemoveAt(i);                        
+                        break;
                     }
-                    else
+                }
+                for (int i = 0; i < User.BetList.Count(); i++)
+                {
+                    if (User.BetList.ElementAt(i).BetId == idTracker.ElementAt(j))
                     {
-                        opponent.BetList.ElementAt(i).DateTimeBetClose = opponent.BetList.ElementAt(i).DateTimeBetClose + " (Now)";
+                        User.BetList.RemoveAt(i);                        
+                        break;
                     }
                 }
             }
 
             await CosmoDBService.UpdateUser(User);
             await CosmoDBService.UpdateUser(opponent);
-
-            LoginViewModel.loggedUser = await CosmoDBService.GetUser(LoginViewModel.loggedUser.Username);
+            LoginViewModel.loggedUser = await CosmoDBService.GetUser(LoginViewModel.loggedUser.Username);            
         }
 
         public TermSheet CreateOpponentsTermSheet(TermSheet inputSheet)
@@ -336,7 +404,7 @@ namespace BetBook.ViewModels
             outputSheet.NonCashBet = inputSheet.NonCashBet;
             outputSheet.BetTerms = inputSheet.BetTerms;
             outputSheet.DateTimeOfferExpiration = inputSheet.DateTimeOfferExpiration;
-            outputSheet.SetBetCloseDate = inputSheet.SetBetCloseDate;
+            //outputSheet.SetBetCloseDate = inputSheet.SetBetCloseDate;
             outputSheet.DateTimeBetClose = inputSheet.DateTimeBetClose;
             outputSheet.BetPhase = "OfferReceived";
 

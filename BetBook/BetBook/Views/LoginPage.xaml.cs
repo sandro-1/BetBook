@@ -19,6 +19,12 @@ namespace BetBook.Views
             InitializeComponent();
             loginVM = new LoginViewModel();
             BindingContext = loginVM;
+
+            //MessagingCenter.Subscribe<object, bool>(Application.Current, "Refresh", (sender, arg) =>
+            //{
+            //    loginVM.RefreshCommand.Execute(null);
+            //    MessagingCenter.Send<object, bool>(Application.Current, "RefreshPages", true);
+            //});
         }
     }
 }

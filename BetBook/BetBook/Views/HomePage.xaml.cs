@@ -1,6 +1,8 @@
-﻿using System;
+﻿using BetBook.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +17,8 @@ namespace BetBook.Views
         public HomePage()
         {
             InitializeComponent();
+            var t = LoginViewModel.loggedUser;
+
             TabbedPage tabsHome = new TabsHomePage();
             tabsHome.Children.Add(new ActiveBetsPage());
             tabsHome.Children.Add(new MakeBetsPage());

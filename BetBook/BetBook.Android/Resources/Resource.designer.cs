@@ -4301,7 +4301,6 @@ namespace BetBook.Droid
 			global::Xamarin.Forms.Material.Android.Resource.Style.CardView = global::BetBook.Droid.Resource.Style.CardView;
 			global::Xamarin.Forms.Material.Android.Resource.Style.CardView_Dark = global::BetBook.Droid.Resource.Style.CardView_Dark;
 			global::Xamarin.Forms.Material.Android.Resource.Style.CardView_Light = global::BetBook.Droid.Resource.Style.CardView_Light;
-			global::Xamarin.Forms.Material.Android.Resource.Style.collectionViewScrollBars = global::BetBook.Droid.Resource.Style.collectionViewScrollBars;
 			global::Xamarin.Forms.Material.Android.Resource.Style.collectionViewTheme = global::BetBook.Droid.Resource.Style.collectionViewTheme;
 			global::Xamarin.Forms.Material.Android.Resource.Style.MainTheme = global::BetBook.Droid.Resource.Style.MainTheme;
 			global::Xamarin.Forms.Material.Android.Resource.Style.MainTheme_Base = global::BetBook.Droid.Resource.Style.MainTheme_Base;

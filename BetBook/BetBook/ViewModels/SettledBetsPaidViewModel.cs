@@ -68,7 +68,9 @@ namespace BetBook.ViewModels
         public ICommand RefreshCommand { get; }
         void ExecuteRefreshCommand()
         {
+            User = LoginViewModel.loggedUser;
             SettledBetsPaid = new ObservableCollection<SettledBetsPaidViewModel>();
+            
             for (int i = 0; i < User.BetList.Count; i++)
             {
                 if (User.BetList.ElementAt(i).BetPhase == "SettledPaid")

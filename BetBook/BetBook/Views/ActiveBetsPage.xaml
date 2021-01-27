@@ -43,11 +43,11 @@
                                         </Label.FormattedText>
                                     </Label>
 
-                                    <Label>
+                                    <Label IsVisible="{Binding DateTimeBetCloseVisible}">
                                         <Label.FormattedText>
                                             <FormattedString>
                                                 <Span Text="Resolve On " TextColor="Black" FontAttributes="Bold" />
-                                                <Span Text="{Binding DateTimeBetClose}" />
+                                                <Span Text="{Binding DateTimeBetClose}" TextColor="{Binding BetResolutionTextColor}"/>
                                             </FormattedString>
                                         </Label.FormattedText>
                                     </Label>

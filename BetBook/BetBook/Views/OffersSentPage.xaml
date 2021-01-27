@@ -61,6 +61,7 @@
                                         </Label.FormattedText>
                                     </Label>
 
+                                    <!--<Button Text="Offer sent has expired" Clicked="RemoveExpiredOffer" BackgroundColor="#FF4081" Opacity=".8" TextColor="White" CornerRadius="10" IsVisible="{Binding ExpirationButtonVisibility}" CommandParameter="{Binding BetId}"/>-->
                                 </StackLayout>
                             </Frame>
                         </ViewCell>

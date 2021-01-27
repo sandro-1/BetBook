@@ -21,16 +21,23 @@ namespace BetBook.Views
             offersReceivedVM = new OffersReceivedViewModel();
             BindingContext = offersReceivedVM;
 
-            MessagingCenter.Subscribe<object, bool>(this, "RemoveOffer", (sender, arg) =>
-            {                
-                offersReceivedVM.RefreshCommand.Execute(null);                
+            //MessagingCenter.Subscribe<object, bool>(this, "RemoveOffer", (sender, arg) =>
+            //{
+            //    offersReceivedVM.RefreshCommand.Execute(null);
+            //    counter++;
+            //});
+
+            MessagingCenter.Subscribe<object, bool>(Application.Current, "Refresh", (sender, arg) =>
+            {
+                offersReceivedVM.RefreshCommand.Execute(null);
             });
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            offersReceivedVM.RefreshCommand.Execute(null);            
+            offersReceivedVM.RefreshCommand.Execute(null);
+            offersReceivedVM.CheckEffectExpiry(null);
         }
 
         public void AcceptOffer(Object Sender, EventArgs args)

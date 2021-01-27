@@ -21,9 +21,13 @@ namespace BetBook.Views
             offersSentVM = new OffersSentViewModel();
             BindingContext = offersSentVM;
 
-            MessagingCenter.Subscribe<object, bool>(this, "RemoveOffer", (sender, arg) =>
+            //MessagingCenter.Subscribe<object, bool>(this, "RemoveOffer", (sender, arg) =>
+            //{
+            //    offersSentVM.RefreshCommand.Execute(null);
+            //});
+            MessagingCenter.Subscribe<object, bool>(Application.Current, "Refresh", (sender, arg) =>
             {
-                offersSentVM.RefreshCommand.Execute(null);
+                offersSentVM.RefreshCommand.Execute(null);                
             });
         }
 
@@ -31,6 +35,18 @@ namespace BetBook.Views
         {
             base.OnAppearing();
             offersSentVM.RefreshCommand.Execute(null);
+            offersSentVM.CheckEffectExpiry(null);
         }
+
+        //public async void RemoveExpiredOffer(Object Sender, EventArgs args)
+        //{
+        //    Button button = (Button)Sender;
+        //    string betId = button.CommandParameter.ToString();
+        //    await offersSentVM.ExecuteExpiredOfferRemoval(betId);
+
+        //    TabsHomeViewModel tabsVM = new TabsHomeViewModel();
+        //    tabsVM.RefreshCommand.Execute(null);
+        //    this.Parent.BindingContext = tabsVM;
+        //}
     }
 }

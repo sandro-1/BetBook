@@ -55,8 +55,6 @@ namespace BetBook.ViewModels
         async Task ExecuteRefreshCommand()
         {
             User = await CosmoDBService.GetUser(LoginViewModel.loggedUser.Username);
-            BetsWonLost = User.UserResults.BetsWon.ToString() + " / " + User.UserResults.BetsLost.ToString();
-            CashWonLost = User.UserResults.CashWon.ToString() + " / " + User.UserResults.CashLost.ToString();
         }
     }
 }
